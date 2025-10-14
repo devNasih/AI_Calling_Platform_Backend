@@ -1,0 +1,144 @@
+{
+  "info": {
+    "name": "AI Calling Agent Backend",
+    "_postman_id": "a1fbb678-4a78-4f47-9f9c-8fd23aa27e32",
+    "description": "Postman Collection for AI Calling Agent Backend APIs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://127.0.0.1:8001/",
+          "protocol": "http",
+          "host": ["127.0.0.1"],
+          "port": "8001",
+          "path": [""]
+        }
+      }
+    },
+    {
+      "name": "Login (JWT Auth)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            { "key": "username", "value": "admin@example.com" },
+            { "key": "password", "value": "admin123" }
+          ]
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8001/v1/login",
+          "protocol": "http",
+          "host": ["127.0.0.1"],
+          "port": "8001",
+          "path": ["v1", "login"]
+        }
+      }
+    },
+    {
+      "name": "Upload Contacts (CSV)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": "contacts.csv"
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8001/v1/contacts/upload",
+          "protocol": "http",
+          "host": ["127.0.0.1"],
+          "port": "8001",
+          "path": ["v1", "contacts", "upload"]
+        }
+      }
+    },
+    {
+      "name": "Get All Contacts",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://127.0.0.1:8001/v1/contacts/all",
+          "protocol": "http",
+          "host": ["127.0.0.1"],
+          "port": "8001",
+          "path": ["v1", "contacts", "all"]
+        }
+      }
+    },
+    {
+      "name": "Start Campaign",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"campaign_name\": \"TestCampaign\",\n    \"message\": \"Hello, this is a test from AI Calling Agent.\",\n    \"region\": \"india\",\n    \"contact_list\": []\n}"
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8001/v1/campaigns/start",
+          "protocol": "http",
+          "host": ["127.0.0.1"],
+          "port": "8001",
+          "path": ["v1", "campaigns", "start"]
+        }
+      }
+    },
+    {
+      "name": "Get Call History",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://127.0.0.1:8001/v1/calls/history",
+          "protocol": "http",
+          "host": ["127.0.0.1"],
+          "port": "8001",
+          "path": ["v1", "calls", "history"]
+        }
+      }
+    }
+  ]
+}

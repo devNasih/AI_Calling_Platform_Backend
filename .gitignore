@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pyc
+*.pyo
+*.pyd
+*.swp
+*.swo
+*.sqlite3
+
+# Virtual Environment
+venv/
+.env
+.env.*
+
+# IDEs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Docker
+*.dockerignore
+*.env
+docker-compose.override.yml
+
+# Elastic Beanstalk
+.elasticbeanstalk/
+*.zip
+
+# Others
+*.egg-info/
+dist/
+build/
