@@ -1,4 +1,4 @@
-from app.services.dialers import make_twilio_call, make_callhippo_call
+from app.services.dialers import make_twilio_call
 from app.models.call_log import CallLog, CallStatus
 from app.models.db import engine
 from sqlmodel import Session
@@ -22,10 +22,10 @@ async def make_outbound_call(
 
     try:
         # ✅ Call the appropriate provider
-        if provider == "callhippo":
-            result = await make_callhippo_call(name, number, message)
-        else:
-            result = await make_twilio_call(name, number, message)
+        # if provider == "callhippo":
+        #     result = await make_callhippo_call(name, number, message)
+        # else:
+        result = await make_twilio_call(name, number, message)
 
         if result.get("status") == "success":
             status = CallStatus.completed

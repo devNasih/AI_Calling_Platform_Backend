@@ -41,3 +41,7 @@ docker-compose.override.yml
 *.egg-info/
 dist/
 build/
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

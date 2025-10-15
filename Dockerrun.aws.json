@@ -1,0 +1,12 @@
+{
+  "AWSEBDockerrunVersion": 2,
+  "image": {
+    "name": "652471033566.dkr.ecr.us-east-1.amazonaws.com/myfastapi:latest",
+    "update": "true"
+  },
+  "ports": [
+    {
+      "containerPort": "8000"
+    }
+  ]
+}
