@@ -20,18 +20,29 @@ router = APIRouter()
 # -------------------------------
 # POST /start — Run Campaign Now
 # -------------------------------
+from fastapi import APIRouter, Depends, HTTPException
+from typing import List
+import traceback
+
+router = APIRouter()
+
 @router.post("/start", response_model=SuccessResponse)
 async def start_campaign(
     campaign: CampaignRequest,
     user: dict = Depends(get_current_user)
 ):
-    if not contact_store:
+    if not campaign.contact_list:
+        print("❌ [DEBUG] contact_list is missing or empty!")
         raise HTTPException(status_code=400, detail="No contacts uploaded.")
 
     successful_calls = 0
     failed_calls = 0
 
-    for contact in contact_store:
+    print(f"☎️ [DEBUG] Starting calls for {len(campaign.contact_list)} contacts...")
+
+    # Iterate through campaign.contact_list instead of contact_store
+    for contact in campaign.contact_list:
+        print(f"📞 [DEBUG] Processing contact: {contact.dict() if hasattr(contact, 'dict') else contact}")
         try:
             await make_outbound_call(
                 name=contact.name,
@@ -41,14 +52,20 @@ async def start_campaign(
                 campaign_name=campaign.campaign_name
             )
             successful_calls += 1
+            print(f"✅ [DEBUG] Successfully initiated call to {contact.phone_number}")
         except Exception as e:
-            print(f"[❌] Failed to call {contact.phone_number}: {e}")
             failed_calls += 1
+            print(f"❌ [DEBUG] Failed to call {contact.phone_number}: {e}")
+            print("[TRACEBACK]", traceback.format_exc())
 
-    return {
-        "message": f"Campaign '{campaign.campaign_name}' started. "
-                   f"{successful_calls} call(s) initiated, {failed_calls} failed."
+    result = {
+        "message": (
+            f"Campaign '{campaign.campaign_name}' started. "
+            f"{successful_calls} call(s) initiated, {failed_calls} failed."
+        )
     }
+
+    return result
 
 # --------------------------------------
 # POST /schedule — Schedule Campaign

@@ -1,11 +1,15 @@
-from fastapi import APIRouter, Request, WebSocket, WebSocketDisconnect, HTTPException
+from fastapi import APIRouter, Request, WebSocket, WebSocketDisconnect, HTTPException, Query
 from fastapi.responses import Response
 from xml.etree.ElementTree import Element, tostring
 from pydantic import BaseModel
 from app.services.ai_pipeline import process_call
+import uuid
 
 # ✅ Single router instance
 router = APIRouter()
+
+# ✅ Store outbound messages temporarily (use Redis in production)
+pending_outbound_messages = {}
 
 # -----------------------------------
 # POST /v1/calls/inbound — Twilio Webhook
@@ -24,11 +28,50 @@ async def handle_inbound_call(request: Request):
 
     # ✅ Basic TwiML response (Future: AI-driven response)
     response = Element("Response")
-    say = Element("Say")
+    say = Element("Say", voice="alice")
     say.text = "Thank you for calling AI Calling Agent. Please wait while we connect you."
     response.append(say)
 
-    xml_string = tostring(response)
+    xml_string = tostring(response, encoding='unicode')
+    return Response(content=xml_string, media_type="application/xml")
+
+
+# -----------------------------------
+# GET/POST /v1/calls/outbound — Twilio Outbound Webhook
+# -----------------------------------
+@router.get("/outbound")
+@router.post("/outbound")
+async def handle_outbound_call(request: Request, message_id: str = Query(None)):
+    """
+    Handles outbound Twilio call webhook.
+    Returns TwiML with the custom message for the call.
+    """
+    # Get parameters
+    if request.method == "GET":
+        params = request.query_params
+    else:
+        params = await request.form()
+    
+    call_sid = params.get("CallSid", "")
+    if not message_id:
+        message_id = params.get("message_id", "")
+    
+    print(f"[Twilio Outbound Callback] CallSid: {call_sid}, MessageID: {message_id}")
+    
+    # Retrieve the custom message
+    message = pending_outbound_messages.get(message_id, "Hello! This is an automated call from our system.")
+    
+    # Clean up after retrieval
+    if message_id in pending_outbound_messages:
+        del pending_outbound_messages[message_id]
+    
+    # Create TwiML response
+    response = Element("Response")
+    say = Element("Say", voice="alice")
+    say.text = message
+    response.append(say)
+    
+    xml_string = tostring(response, encoding='unicode')
     return Response(content=xml_string, media_type="application/xml")
 
 
@@ -77,3 +120,5 @@ def process_ai_result(payload: AICallRequest):
         "call_id": payload.call_id,
         "ai_result": result
     }
+# Export for use in other modules
+__all__ = ['router', 'pending_outbound_messages']
